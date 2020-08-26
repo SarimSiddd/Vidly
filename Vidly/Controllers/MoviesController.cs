@@ -60,10 +60,50 @@ namespace Vidly.Controllers
             return View(Movie);
         }
 
-        [Route("movies/released/{year}/{month:regex(\\d{2}):range(1,12)}")]
-        public ActionResult ByReleaseDate(int year, int month){
+        public ActionResult New()
+        {
+            var Genres = _context.Genres.ToList();
+            var viewModel = new MoviesFormViewModel
+            {
+                Genres = Genres
+            };
 
-            return Content(string.Format("{0}, {1}", year, month));
+            return View("MovieForm", viewModel);
+        }
+
+        public ActionResult Edit(int Id)
+        {
+            var Movie = _context.Movies.SingleOrDefault(c => c.Id == Id);
+            if (Movie == null)
+                return HttpNotFound();
+
+            var viewModel = new MoviesFormViewModel
+            {
+                Movie = Movie,
+                Genres = _context.Genres.ToList()
+            };
+
+            Movie.GenreId = 2;
+            return View("MovieForm", viewModel);
+        }
+
+        [HttpPost]
+        public ActionResult Save(Movie movie)
+        {
+            movie.DateAdded = DateTime.Now;
+            if (movie.Id == 0)
+                _context.Movies.Add(movie);
+            else {
+                var movieInDB = _context.Movies.Single(c => c.Id == movie.Id);
+                movieInDB.Name = movie.Name;
+                movieInDB.ReleaseDate = movie.ReleaseDate;
+                movieInDB.GenreId = movie.GenreId;
+                movieInDB.NumberInStock = movie.NumberInStock;
+
+            }
+
+            _context.SaveChanges();
+            return RedirectToAction("Index", "Movies");
         }
     }
 }
