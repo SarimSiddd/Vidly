@@ -1,4 +1,4 @@
-﻿@model Vidly.ViewModel.MoviesViewModel
+﻿@model IEnumerable<Vidly.Models.Movie>
 
 @{
     ViewBag.Title = "Index";
@@ -8,19 +8,29 @@
 <h2>Movies</h2>
 
 <table class=table table-­‐bordered table-­‐hover>
-    <tr>
-        <th>
-            Movies
-        </th>
-    </tr>
-    @foreach (var Movie in Model.Movies)
-    {
+    <thead>
         <tr>
-            <td>
-                @Movie.Name
-            </td>
+            <th>
+                Movies
+            </th>
+            <th>
+                Genre
+            </th>
         </tr>
-    }
+    </thead>
+    <tbody>
+        @foreach (var Movie in Model)
+        {
+            <tr>
+                <td>
+                    @Html.ActionLink(Movie.Name, "Details", new { Id = Movie.Id }, null)                  
+                </td>
+                <td>
+                    @Movie.Genre.Name
+                </td>
+            </tr>
+        }
+    </tbody>
 </table>
 
 

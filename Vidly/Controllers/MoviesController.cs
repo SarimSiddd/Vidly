@@ -5,11 +5,24 @@ using System.Web;
 using System.Web.Mvc;
 using Vidly.Models;
 using Vidly.ViewModel;
+using System.Data.Entity;
 
 namespace Vidly.Controllers
 {
     public class MoviesController : Controller
     {
+        ApplicationDbContext _context;
+
+        public MoviesController()
+        {
+            _context = new ApplicationDbContext();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            _context.Dispose();
+        }
+
         // GET: Movies/Random
         public ActionResult Random()
         {
@@ -31,16 +44,20 @@ namespace Vidly.Controllers
             return View(viewModel);
         }
 
-        public ActionResult Edit (int Id)
-        {
-            return Content(string.Format("The Id is {0}", Id));
-        }
-
         //Id here is nullable
         public ActionResult Index ()
         {
-            MoviesViewModel viewModel = new MoviesViewModel();
-            return View(viewModel);
+            //MoviesViewModel viewModel = new MoviesViewModel();
+            var Movies = _context.Movies.Include(c => c.Genre).ToList();
+            if (!Movies.Any())
+                return HttpNotFound();
+            return View(Movies);
+        }
+
+        public ActionResult Details (int Id)
+        {
+            var Movie = _context.Movies.Include(c => c.Genre).SingleOrDefault(c => c.Id == Id);
+            return View(Movie);
         }
 
         [Route("movies/released/{year}/{month:regex(\\d{2}):range(1,12)}")]

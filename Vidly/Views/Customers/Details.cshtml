@@ -6,4 +6,14 @@
 }
 
 <h2>@Model.Name</h2>
+<ul>
+    @if (!Model.MembershipType.Name.IsEmpty())
+    {
+        <li>@Model.MembershipType.Name</li>
+    }
+    @if (Model.BirthDate.HasValue)
+    {
+        <li>@Model.BirthDate</li>
+    }
+</ul>
 
